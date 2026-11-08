@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Điểm Danh Lớp 6/9</title>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Điểm Danh 6/9">
+  <meta name="theme-color" content="#4f46e5">
+
+  <style>
+    /* CSS Thuần 100% tự chứa - Đảm bảo chạy mượt trên mọi thiết bị offline/online */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding-bottom: 95px;
+    }
+    
+    /* Header cố định */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 14px 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .badge-class {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      color: white;
+      font-weight: 800;
+      font-size: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+      flex-shrink: 0;
+    }
+    .header-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .header-sub {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .btn-guide {
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Thống kê 3 ô */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .stat-card {
+      padding: 8px 6px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .stat-card.total { background: #f8fafc; border: 1px solid #cbd5e1; }
+    .stat-card.present { background: #ecfdf5; border: 1px solid #a7f3d0; }
+    .stat-card.absent { background: #fff1f2; border: 1px solid #fecdd3; }
+    
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-card.total .stat-label { color: #64748b; }
+    .stat-card.present .stat-label { color: #059669; }
+    .stat-card.absent .stat-label { color: #e11d48; }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-top: 2px;
+    }
+    .stat-card.total .stat-value { color: #1e293b; }
+    .stat-card.present .stat-value { color: #047857; }
+    .stat-card.absent .stat-value { color: #be123c; }
+
+    /* Thanh tìm kiếm */
+    .search-box {
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 9px 34px 9px 34px;
+      border-radius: 12px;
+      background: #f1f5f9;
+      border: 1px solid transparent;
+      font-size: 14px;
+      color: #0f172a;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .search-input:focus {
+      background: #ffffff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: #94a3b8;
+    }
+    .clear-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .clear-btn svg { width: 15px; height: 15px; fill: #94a3b8; }
+
+    /* Tabs lọc */
+    .tabs {
+      display: flex;
+      background: #e2e8f0;
+      padding: 3px;
+      border-radius: 10px;
+      gap: 3px;
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: white;
+      color: #4338ca;
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Vùng danh sách */
+    main {
+      padding: 12px 14px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .info-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 10px;
+      padding: 0 4px;
+    }
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      margin-right: 4px;
+    }
+
+    .students-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    /* Thẻ học sinh */
+    .student-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s, border-color 0.15s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .student-card:active {
+      transform: scale(0.98);
+      background-color: #f8fafc;
+    }
+    .student-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      pointer-events: none; /* Tránh cản trở sự kiện chạm của thẻ cha */
+    }
+    .stt-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .name-box {
+      min-width: 0;
+      pointer-events: none;
+    }
+    .student-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .student-status {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      display: block;
+      margin-top: 1px;
+    }
+
+    .check-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #cbd5e1;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      pointer-events: none;
+    }
+
+    /* Trạng thái ĐÃ CÓ MẶT (Gạch tên) */
+    .student-card.is-present {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+    .student-card.is-present .stt-box {
+      background: #10b981;
+      color: white;
+    }
+    .student-card.is-present .student-name {
+      text-decoration: line-through;
+      text-decoration-thickness: 2.5px;
+      text-decoration-color: #ef4444; /* Gạch ngang màu đỏ rõ ràng */
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .student-card.is-present .student-status {
+      color: #059669;
+    }
+    .student-card.is-present .check-circle {
+      background: #10b981;
+      border-color: #10b981;
+    }
+    .student-card.is-present .check-circle svg {
+      display: block;
+      width: 14px;
+      height: 14px;
+      fill: white;
+    }
+
+    /* Thanh công cụ nổi phía dưới điện thoại */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid #e2e8f0;
+      padding: 10px 14px;
+      display: flex;
+      gap: 10px;
+      z-index: 40;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+    }
+    .btn-action-reset {
+      flex: 1;
+      padding: 12px 10px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-action-copy {
+      flex: 1.6;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: none;
+      background: #4f46e5;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+    }
+    .btn-action-reset:active, .btn-action-copy:active {
+      transform: scale(0.97);
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 75px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0f172a;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 30px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 100;
+      white-space: nowrap;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 10px;
+      color: #64748b;
+      display: none;
+    }
+    .empty-state p { margin-top: 6px; font-size: 14px; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+    @media (min-width: 640px) {
+      .modal-overlay { align-items: center; }
+    }
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+    .modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+    .guide-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #334155;
+    }
+    .btn-full {
+      width: 100%;
+      padding: 12px;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-top">
+      <div class="header-title-wrap">
+        <div class="badge-class">6/9</div>
+        <div>
+          <div class="header-title">Điểm Danh Lớp 6/9</div>
+          <div class="header-sub" id="currentDate">Hôm nay</div>
+        </div>
+      </div>
+      <button class="btn-guide" onclick="openGuide()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        Cài vào máy
+      </button>
+    </div>
+
+    <!-- 3 Ô SĨ SỐ -->
+    <div class="stats-bar">
+      <div class="stat-card total">
+        <div class="stat-label">Tổng số</div>
+        <div class="stat-value" id="totalCount">52</div>
+      </div>
+      <div class="stat-card present">
+        <div class="stat-label">Có mặt</div>
+        <div class="stat-value" id="presentCount">0</div>
+      </div>
+      <div class="stat-card absent">
+        <div class="stat-label">Chưa đến</div>
+        <div class="stat-value" id="absentCount">52</div>
+      </div>
+    </div>
+
+    <!-- TÌM KIẾM -->
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="#94a3b8" stroke-width="2.5" fill="none"></circle><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="#94a3b8" stroke-width="2.5"></line></svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Gõ tên để tìm nhanh..." oninput="handleSearch()">
+      <button id="clearBtn" class="clear-btn" onclick="clearSearch()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15" stroke="white" stroke-width="2"></line><line x1="9" y1="9" x2="15" y2="15" stroke="white" stroke-width="2"></line></svg>
+      </button>
+    </div>
+
+    <!-- TABS LỌC -->
+    <div class="tabs">
+      <button id="tab-all" class="tab-btn active" onclick="setFilter('all')">Tất cả (52)</button>
+      <button id="tab-absent" class="tab-btn" onclick="setFilter('absent')">Chưa đến</button>
+      <button id="tab-present" class="tab-btn" onclick="setFilter('present')">Đã gạch</button>
+    </div>
+  </header>
+
+  <!-- NỘI DUNG CHÍNH -->
+  <main>
+    <div class="info-bar">
+      <div><span class="dot"></span>Chạm vào tên để <b>gạch</b></div>
+      <div id="filterCountText">52 học sinh</div>
+    </div>
+
+    <div id="studentsList" class="students-list">
+      <!-- In tĩnh sẵn 52 học sinh kèm data-id -->
+      <div class="student-card" id="student-row-1" data-id="1">
+        <div class="student-left"><div class="stt-box">1</div><div class="name-box"><span class="student-name">Lê Bảo An</span><span class="student-status" id="st-1">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-2" data-id="2">
+        <div class="student-left"><div class="stt-box">2</div><div class="name-box"><span class="student-name">Lê Trần Gia An</span><span class="student-status" id="st-2">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-3" data-id="3">
+        <div class="student-left"><div class="stt-box">3</div><div class="name-box"><span class="student-name">Vũ Ngọc Bảo An</span><span class="student-status" id="st-3">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-4" data-id="4">
+        <div class="student-left"><div class="stt-box">4</div><div class="name-box"><span class="student-name">Nguyễn Hoài Anh</span><span class="student-status" id="st-4">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-5" data-id="5">
+        <div class="student-left"><div class="stt-box">5</div><div class="name-box"><span class="student-name">Nguyễn Trâm Anh</span><span class="student-status" id="st-5">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-6" data-id="6">
+        <div class="student-left"><div class="stt-box">6</div><div class="name-box"><span class="student-name">Trần Huỳnh Ngân Anh</span><span class="student-status" id="st-6">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-7" data-id="7">
+        <div class="student-left"><div class="stt-box">7</div><div class="name-box"><span class="student-name">Vũ Hoàng Anh</span><span class="student-status" id="st-7">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-8" data-id="8">
+        <div class="student-left"><div class="stt-box">8</div><div class="name-box"><span class="student-name">Ngô Ngọc Ánh</span><span class="student-status" id="st-8">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-9" data-id="9">
+        <div class="student-left"><div class="stt-box">9</div><div class="name-box"><span class="student-name">Lê Vũ An Bình</span><span class="student-status" id="st-9">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-10" data-id="10">
+        <div class="student-left"><div class="stt-box">10</div><div class="name-box"><span class="student-name">Nguyễn Xuân Bình</span><span class="student-status" id="st-10">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-11" data-id="11">
+        <div class="student-left"><div class="stt-box">11</div><div class="name-box"><span class="student-name">Đỗ Ngọc Lan Chi</span><span class="student-status" id="st-11">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-12" data-id="12">
+        <div class="student-left"><div class="stt-box">12</div><div class="name-box"><span class="student-name">Danh Bùi Khả Doanh</span><span class="student-status" id="st-12">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-13" data-id="13">
+        <div class="student-left"><div class="stt-box">13</div><div class="name-box"><span class="student-name">Ngô Khánh Đăng</span><span class="student-status" id="st-13">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-14" data-id="14">
+        <div class="student-left"><div class="stt-box">14</div><div class="name-box"><span class="student-name">Nguyễn Phúc An Gia</span><span class="student-status" id="st-14">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-15" data-id="15">
+        <div class="student-left"><div class="stt-box">15</div><div class="name-box"><span class="student-name">Nguyễn Minh Ngọc Giàu</span><span class="student-status" id="st-15">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-16" data-id="16">
+        <div class="student-left"><div class="stt-box">16</div><div class="name-box"><span class="student-name">Tô Trần Minh Hào</span><span class="student-status" id="st-16">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-17" data-id="17">
+        <div class="student-left"><div class="stt-box">17</div><div class="name-box"><span class="student-name">Nguyễn Thanh Hiền</span><span class="student-status" id="st-17">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-18" data-id="18">
+        <div class="student-left"><div class="stt-box">18</div><div class="name-box"><span class="student-name">Vũ Hoàng Ngọc Hiền</span><span class="student-status" id="st-18">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-19" data-id="19">
+        <div class="student-left"><div class="stt-box">19</div><div class="name-box"><span class="student-name">Phạm Hoàng Diệu Hiếu</span><span class="student-status" id="st-19">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-20" data-id="20">
+        <div class="student-left"><div class="stt-box">20</div><div class="name-box"><span class="student-name">Trương Đức Hiếu</span><span class="student-status" id="st-20">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-21" data-id="21">
+        <div class="student-left"><div class="stt-box">21</div><div class="name-box"><span class="student-name">Bùi Đặng Xuân Hoa</span><span class="student-status" id="st-21">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-22" data-id="22">
+        <div class="student-left"><div class="stt-box">22</div><div class="name-box"><span class="student-name">Quách Gia Hưng</span><span class="student-status" id="st-22">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-23" data-id="23">
+        <div class="student-left"><div class="stt-box">23</div><div class="name-box"><span class="student-name">Bùi Việt Hy</span><span class="student-status" id="st-23">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-24" data-id="24">
+        <div class="student-left"><div class="stt-box">24</div><div class="name-box"><span class="student-name">Huỳnh Gia Khang</span><span class="student-status" id="st-24">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-25" data-id="25">
+        <div class="student-left"><div class="stt-box">25</div><div class="name-box"><span class="student-name">Nguyễn Tấn Khang</span><span class="student-status" id="st-25">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-26" data-id="26">
+        <div class="student-left"><div class="stt-box">26</div><div class="name-box"><span class="student-name">Trần Gia Phúc Khang</span><span class="student-status" id="st-26">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-27" data-id="27">
+        <div class="student-left"><div class="stt-box">27</div><div class="name-box"><span class="student-name">Trần Tuấn Khang</span><span class="student-status" id="st-27">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-28" data-id="28">
+        <div class="student-left"><div class="stt-box">28</div><div class="name-box"><span class="student-name">Phạm Hoàng Vân Khánh</span><span class="student-status" id="st-28">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-29" data-id="29">
+        <div class="student-left"><div class="stt-box">29</div><div class="name-box"><span class="student-name">Nguyễn Hoàng Đăng Khoa</span><span class="student-status" id="st-29">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-30" data-id="30">
+        <div class="student-left"><div class="stt-box">30</div><div class="name-box"><span class="student-name">Trần Vũ Đăng Khoa</span><span class="student-status" id="st-30">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-31" data-id="31">
+        <div class="student-left"><div class="stt-box">31</div><div class="name-box"><span class="student-name">Vũ Tuấn Khôi</span><span class="student-status" id="st-31">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-32" data-id="32">
+        <div class="student-left"><div class="stt-box">32</div><div class="name-box"><span class="student-name">Hà Thiên Kim</span><span class="student-status" id="st-32">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-33" data-id="33">
+        <div class="student-left"><div class="stt-box">33</div><div class="name-box"><span class="student-name">Đặng Ngọc Linh</span><span class="student-status" id="st-33">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-34" data-id="34">
+        <div class="student-left"><div class="stt-box">34</div><div class="name-box"><span class="student-name">Trần Tú Linh</span><span class="student-status" id="st-34">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-35" data-id="35">
+        <div class="student-left"><div class="stt-box">35</div><div class="name-box"><span class="student-name">Trần Nhật Minh</span><span class="student-status" id="st-35">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-36" data-id="36">
+        <div class="student-left"><div class="stt-box">36</div><div class="name-box"><span class="student-name">Phạm Thanh Nga</span><span class="student-status" id="st-36">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-37" data-id="37">
+        <div class="student-left"><div class="stt-box">37</div><div class="name-box"><span class="student-name">Huỳnh Khả Ngân</span><span class="student-status" id="st-37">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-38" data-id="38">
+        <div class="student-left"><div class="stt-box">38</div><div class="name-box"><span class="student-name">Nguyễn Lâm Gia Ngân</span><span class="student-status" id="st-38">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-39" data-id="39">
+        <div class="student-left"><div class="stt-box">39</div><div class="name-box"><span class="student-name">Nguyễn Phương Nghi</span><span class="student-status" id="st-39">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-40" data-id="40">
+        <div class="student-left"><div class="stt-box">40</div><div class="name-box"><span class="student-name">Phan Hoàng Như Ngọc</span><span class="student-status" id="st-40">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-41" data-id="41">
+        <div class="student-left"><div class="stt-box">41</div><div class="name-box"><span class="student-name">Trần Nguyễn Bảo Ngọc</span><span class="student-status" id="st-41">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-42" data-id="42">
+        <div class="student-left"><div class="stt-box">42</div><div class="name-box"><span class="student-name">Hoàng Ngọc Tuệ Nhi</span><span class="student-status" id="st-42">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-43" data-id="43">
+        <div class="student-left"><div class="stt-box">43</div><div class="name-box"><span class="student-name">Trương Hoàng Phúc</span><span class="student-status" id="st-43">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-44" data-id="44">
+        <div class="student-left"><div class="stt-box">44</div><div class="name-box"><span class="student-name">Phạm Lộc Phước</span><span class="student-status" id="st-44">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-45" data-id="45">
+        <div class="student-left"><div class="stt-box">45</div><div class="name-box"><span class="student-name">Nguyễn Hà Phương</span><span class="student-status" id="st-45">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-46" data-id="46">
+        <div class="student-left"><div class="stt-box">46</div><div class="name-box"><span class="student-name">Trần Ngọc Quyên</span><span class="student-status" id="st-46">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-47" data-id="47">
+        <div class="student-left"><div class="stt-box">47</div><div class="name-box"><span class="student-name">Hứa Như Quỳnh</span><span class="student-status" id="st-47">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-48" data-id="48">
+        <div class="student-left"><div class="stt-box">48</div><div class="name-box"><span class="student-name">Đặng Nhật Thành</span><span class="student-status" id="st-48">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-49" data-id="49">
+        <div class="student-left"><div class="stt-box">49</div><div class="name-box"><span class="student-name">Nguyễn Thị Cát Tường</span><span class="student-status" id="st-49">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-50" data-id="50">
+        <div class="student-left"><div class="stt-box">50</div><div class="name-box"><span class="student-name">Triệu Nguyễn Thủy Vân</span><span class="student-status" id="st-50">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-51" data-id="51">
+        <div class="student-left"><div class="stt-box">51</div><div class="name-box"><span class="student-name">Nguyễn Phúc Vinh</span><span class="student-status" id="st-51">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+      <div class="student-card" id="student-row-52" data-id="52">
+        <div class="student-left"><div class="stt-box">52</div><div class="name-box"><span class="student-name">Văn Ngọc Trúc Vy</span><span class="student-status" id="st-52">Chưa điểm danh</span></div></div>
+        <div class="check-circle"><svg viewBox="0 0 24 24" style="display:none;"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></polyline></svg></div>
+      </div>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path><line x1="3" y1="3" x2="21" y2="21" stroke="#e11d48" stroke-width="2"></line></svg>
+      <p>Không tìm thấy học sinh nào!</p>
+    </div>
+  </main>
+
+  <!-- THANH DƯỚI ĐÁY -->
+  <div class="bottom-bar">
+    <button class="btn-action-reset" onclick="openResetModal()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+      Làm mới
+    </button>
+    <button class="btn-action-copy" onclick="copyAbsentList()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      Sao chép DS Vắng
+    </button>
+  </div>
+
+  <!-- TOAST BÁO HIỆU -->
+  <div id="toast">Đã cập nhật</div>
+
+  <!-- MODAL HƯỚNG DẪN CÀI ĐẶT -->
+  <div id="guideModal" class="modal-overlay" onclick="closeGuide(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-title">Cài ứng dụng ra màn hình chính</div>
+      <div class="guide-box">
+        <strong>Trên iPhone (Safari):</strong><br>
+        1. Bấm nút <strong>Chia sẻ</strong> (biểu tượng hình vuông mũi tên chỉ lên ở cạnh dưới Safari).<br>
+        2. Chọn <strong>"Thêm vào MH chính"</strong> (Add to Home Screen).
+      </div>
+      <div class="guide-box">
+        <strong>Trên Android (Chrome):</strong><br>
+        1. Bấm dấu <strong>3 chấm (⋮)</strong> góc trên bên phải.<br>
+        2. Chọn <strong>"Thêm vào Màn hình chính"</strong>.
+      </div>
+      <button class="btn-full" onclick="document.getElementById('guideModal').style.display='none'">Đã hiểu</button>
+    </div>
+  </div>
+
+  <!-- MODAL LÀM MỚI -->
+  <div id="resetModal" class="modal-overlay" onclick="closeResetModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;">
+      <div class="modal-title" style="color: #be123c;">Điểm danh ngày mới?</div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+        Hành động này sẽ xóa hết các gạch tên và đưa danh sách về chưa có mặt.
+      </p>
+      <div style="display: flex; gap: 8px;">
+        <button onclick="document.getElementById('resetModal').style.display='none'" style="flex:1; padding:12px; border-radius:12px; border:1px solid #cbd5e1; background:#f8fafc; font-weight:700;">Hủy</button>
+        <button onclick="confirmReset()" style="flex:1; padding:12px; border-radius:12px; border:none; background:#e11d48; color:white; font-weight:700;">Làm mới ngay</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Danh sách 52 học sinh Lớp 6/9 chính xác theo ảnh
+    const STUDENT_NAMES = [
+      "Lê Bảo An",
+      "Lê Trần Gia An",
+      "Vũ Ngọc Bảo An",
+      "Nguyễn Hoài Anh",
+      "Nguyễn Trâm Anh",
+      "Trần Huỳnh Ngân Anh",
+      "Vũ Hoàng Anh",
+      "Ngô Ngọc Ánh",
+      "Lê Vũ An Bình",
+      "Nguyễn Xuân Bình",
+      "Đỗ Ngọc Lan Chi",
+      "Danh Bùi Khả Doanh",
+      "Ngô Khánh Đăng",
+      "Nguyễn Phúc An Gia",
+      "Nguyễn Minh Ngọc Giàu",
+      "Tô Trần Minh Hào",
+      "Nguyễn Thanh Hiền",
+      "Vũ Hoàng Ngọc Hiền",
+      "Phạm Hoàng Diệu Hiếu",
+      "Trương Đức Hiếu",
+      "Bùi Đặng Xuân Hoa",
+      "Quách Gia Hưng",
+      "Bùi Việt Hy",
+      "Huỳnh Gia Khang",
+      "Nguyễn Tấn Khang",
+      "Trần Gia Phúc Khang",
+      "Trần Tuấn Khang",
+      "Phạm Hoàng Vân Khánh",
+      "Nguyễn Hoàng Đăng Khoa",
+      "Trần Vũ Đăng Khoa",
+      "Vũ Tuấn Khôi",
+      "Hà Thiên Kim",
+      "Đặng Ngọc Linh",
+      "Trần Tú Linh",
+      "Trần Nhật Minh",
+      "Phạm Thanh Nga",
+      "Huỳnh Khả Ngân",
+      "Nguyễn Lâm Gia Ngân",
+      "Nguyễn Phương Nghi",
+      "Phan Hoàng Như Ngọc",
+      "Trần Nguyễn Bảo Ngọc",
+      "Hoàng Ngọc Tuệ Nhi",
+      "Trương Hoàng Phúc",
+      "Phạm Lộc Phước",
+      "Nguyễn Hà Phương",
+      "Trần Ngọc Quyên",
+      "Hứa Như Quỳnh",
+      "Đặng Nhật Thành",
+      "Nguyễn Thị Cát Tường",
+      "Triệu Nguyễn Thủy Vân",
+      "Nguyễn Phúc Vinh",
+      "Văn Ngọc Trúc Vy"
+    ];
+
+    const STORAGE_KEY = 'lop_6_9_attendance_state_v2';
+    let students = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    function cleanString(str) {
+      if (!str) return '';
+      try {
+        return str.toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/đ/g, 'd');
+      } catch (e) {
+        return str.toLowerCase();
+      }
+    }
+
+    // Khởi tạo danh sách an toàn tuyệt đối với mọi chế độ xem trên iOS
+    function initApp() {
+      let saved = {};
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const stored = window.localStorage.getItem(STORAGE_KEY);
+          if (stored) saved = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.warn("Storage restricted in preview mode", e);
+      }
+
+      students = STUDENT_NAMES.map((name, index) => {
+        const id = index + 1;
+        return {
+          id: id,
+          name: name,
+          isPresent: !!saved[id]
+        };
+      });
+
+      // Hiển thị ngày
+      try {
+        const now = new Date();
+        const days = ['Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+        const d = String(now.getDate()).padStart(2, '0');
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const dateEl = document.getElementById('currentDate');
+        if (dateEl) dateEl.textContent = `${days[now.getDay()]}, ${d}/${m}/${now.getFullYear()}`;
+      } catch(e) {}
+
+      // LẮNG NGHE SỰ KIỆN CHẠM/CLICK TRỰC TIẾP QUA JAVASCRIPT (Khắc phục triệt để lỗi không bấm được trên iOS)
+      setupCardListeners();
+
+      updateDOM();
+    }
+
+    function setupCardListeners() {
+      const container = document.getElementById('studentsList');
+      if (!container) return;
+
+      // Hỗ trợ cả Touch và Click với cờ chặn kích hoạt đúp
+      let touched = false;
+
+      function handleAction(target) {
+        const card = target.closest('.student-card');
+        if (!card) return;
+        const idStr = card.getAttribute('data-id');
+        if (idStr) {
+          const id = parseInt(idStr, 10);
+          toggleStudent(id);
+        }
+      }
+
+      container.addEventListener('touchstart', function(e) {
+        touched = true;
+      }, { passive: true });
+
+      container.addEventListener('touchend', function(e) {
+        const touch = e.changedTouches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (element) {
+          handleAction(element);
+        }
+        setTimeout(() => { touched = false; }, 400);
+      }, { passive: true });
+
+      container.addEventListener('click', function(e) {
+        if (touched) return; // Đã xử lý qua touch
+        handleAction(e.target);
+      });
+    }
+
+    function saveState() {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const state = {};
+          students.forEach(s => {
+            if (s.isPresent) state[s.id] = 1;
+          });
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+      } catch (e) {
+        console.warn("Storage restricted", e);
+      }
+    }
+
+    function toggleStudent(id) {
+      const student = students.find(s => s.id === id);
+      if (student) {
+        student.isPresent = !student.isPresent;
+        saveState();
+        updateDOM();
+
+        try {
+          if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(25);
+          }
+        } catch(e) {}
+
+        if (student.isPresent) {
+          showToast(`Đã gạch: ${student.name}`);
+        } else {
+          showToast(`Bỏ gạch: ${student.name}`);
+        }
+      }
+    }
+
+    function updateDOM() {
+      const q = cleanString(searchQuery.trim());
+      let visibleCount = 0;
+      let presentCount = 0;
+
+      students.forEach(student => {
+        if (student.isPresent) presentCount++;
+
+        let isMatch = true;
+        if (currentFilter === 'absent' && student.isPresent) isMatch = false;
+        if (currentFilter === 'present' && !student.isPresent) isMatch = false;
+
+        if (isMatch && q) {
+          const normName = cleanString(student.name);
+          const normId = student.id.toString();
+          if (!normName.includes(q) && normId !== q) {
+            isMatch = false;
+          }
+        }
+
+        const row = document.getElementById(`student-row-${student.id}`);
+        const statusText = document.getElementById(`st-${student.id}`);
+        if (row) {
+          row.style.display = isMatch ? 'flex' : 'none';
+          if (student.isPresent) {
+            row.classList.add('is-present');
+            const svg = row.querySelector('.check-circle svg');
+            if (svg) svg.style.display = 'block';
+            if (statusText) statusText.textContent = '✓ Đã có mặt';
+          } else {
+            row.classList.remove('is-present');
+            const svg = row.querySelector('.check-circle svg');
+            if (svg) svg.style.display = 'none';
+            if (statusText) statusText.textContent = 'Chưa điểm danh';
+          }
+        }
+
+        if (isMatch) visibleCount++;
+      });
+
+      const absentCount = students.length - presentCount;
+
+      const tEl = document.getElementById('totalCount');
+      const pEl = document.getElementById('presentCount');
+      const aEl = document.getElementById('absentCount');
+      const tabAll = document.getElementById('tab-all');
+      const tabAbs = document.getElementById('tab-absent');
+      const tabPres = document.getElementById('tab-present');
+      const fText = document.getElementById('filterCountText');
+      const emptyEl = document.getElementById('emptyState');
+
+      if (tEl) tEl.textContent = students.length;
+      if (pEl) pEl.textContent = presentCount;
+      if (aEl) aEl.textContent = absentCount;
+      if (tabAll) tabAll.textContent = `Tất cả (${students.length})`;
+      if (tabAbs) tabAbs.textContent = `Chưa đến (${absentCount})`;
+      if (tabPres) tabPres.textContent = `Đã gạch (${presentCount})`;
+      if (fText) fText.textContent = `${visibleCount}/${students.length} học sinh`;
+
+      if (emptyEl) {
+        emptyEl.style.display = (visibleCount === 0) ? 'block' : 'none';
+      }
+    }
+
+    function setFilter(type) {
+      currentFilter = type;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`tab-${type}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      updateDOM();
+    }
+
+    function handleSearch() {
+      const input = document.getElementById('searchInput');
+      searchQuery = input ? input.value : '';
+      const clearBtn = document.getElementById('clearBtn');
+      if (clearBtn) clearBtn.style.display = searchQuery ? 'flex' : 'none';
+      updateDOM();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      if (input) input.value = '';
+      searchQuery = '';
+      const clearBtn = document.getElementById('clearBtn');
+      if (clearBtn) clearBtn.style.display = 'none';
+      updateDOM();
+    }
+
+    function openGuide() {
+      const modal = document.getElementById('guideModal');
+      if (modal) modal.style.display = 'flex';
+    }
+    function closeGuide(e) {
+      const modal = document.getElementById('guideModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function openResetModal() {
+      const modal = document.getElementById('resetModal');
+      if (modal) modal.style.display = 'flex';
+    }
+    function closeResetModal(e) {
+      const modal = document.getElementById('resetModal');
+      if (modal) modal.style.display = 'none';
+    }
+    function confirmReset() {
+      students.forEach(s => s.isPresent = false);
+      saveState();
+      const modal = document.getElementById('resetModal');
+      if (modal) modal.style.display = 'none';
+      updateDOM();
+      showToast('Đã làm mới danh sách buổi mới!');
+    }
+
+    function copyAbsentList() {
+      const absentList = students.filter(s => !s.isPresent);
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+
+      let text = `[BÁO CÁO ĐIỂM DANH LỚP 6/9 - Ngày ${d}/${m}/${now.getFullYear()}]\n`;
+      text += `• Sĩ số: ${students.length}\n`;
+      text += `• Có mặt: ${students.length - absentList.length}\n`;
+      text += `• Vắng: ${absentList.length}\n`;
+
+      if (absentList.length > 0) {
+        text += `\nDanh sách học sinh vắng:\n`;
+        absentList.forEach((s, idx) => {
+          text += `${idx + 1}. [STT ${s.id}] ${s.name}\n`;
+        });
+      } else {
+        text += `\nLớp đi học đầy đủ 100%!`;
+      }
+
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast(`Đã sao chép (${absentList.length} bạn vắng)`);
+      } catch (err) {
+        showToast('Đã tạo báo cáo vắng');
+      }
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1600);
+    }
+
+    // Khởi tạo chạy ngay
+    initApp();
+  </script>
+</body>
+</html>
